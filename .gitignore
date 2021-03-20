@@ -1,2 +1,6 @@
 /.metadata/
+/app/target/
 /target/
+/app/target/*
+app/target
+/app/target/*
