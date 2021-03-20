@@ -1,9 +1,8 @@
 package app.core;
-
 import java.sql.*;
 import java.util.Properties;
 
-public class ConnectionHandler {
+public abstract class ConnectionHandler {
     protected Connection conn;
     public ConnectionHandler () {
     }
@@ -17,6 +16,8 @@ public class ConnectionHandler {
         } catch (Exception e)
     	{
             throw new RuntimeException("Unable to connect", e);
+    	} finally {
+    		System.out.println("Connection successful!");
     	}
     }
 }

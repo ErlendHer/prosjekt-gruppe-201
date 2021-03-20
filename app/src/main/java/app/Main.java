@@ -1,11 +1,12 @@
 package app;
 
-import app.core.ConnectionHandler;
+import java.sql.SQLException;
+
+import app.core.Controller;
 
 public class Main {
 
-	public static void main(String[] args) {
-		ConnectionHandler conn = new ConnectionHandler();
-		conn.connect();
+	public static void main(String[] args) throws SQLException {
+		Controller conn = new Controller();
 	}
 }
