@@ -57,10 +57,11 @@ public class logInController extends ConnectionHandler {
 	    String inputPassword = in.nextLine();
 
 	    boolean access = grantUserAccess(userEmail, inputPassword);
-	    updateLastLoginQuery(userEmail);
+	    
 
 	    if (access) {
 	      System.out.println("Welcome " + userEmail + '\n');
+	      updateLastLoginQuery(userEmail);
 	    } else {
 		System.out.println("Wrong email or password \n"); 
 	    }
