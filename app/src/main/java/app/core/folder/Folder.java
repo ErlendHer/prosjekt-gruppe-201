@@ -8,14 +8,25 @@ public class Folder {
   private int folderID;
 
   private ArrayList<Folder> children;
+  private ArrayList<ThreadPost> threads;
   private Folder parent;
 
-  public Folder(String name, int folderID, int parentID) {
+  public Folder(String name, int folderID, int parentID, ArrayList<ThreadPost> threads) {
     this.name = name;
     this.folderID = folderID;
     this.parentID = parentID;
+    this.threads = threads;
 
     children = new ArrayList<>();
+  }
+
+  public Folder(Folder folder) {
+    this.name = folder.getName();
+    this.parentID = folder.getParentID();
+    this.folderID = folder.getFolderID();
+    this.children = folder.getChildren();
+    this.threads = folder.getThreads();
+    this.parent = folder.getParent();
   }
 
   public String getName() {
@@ -65,5 +76,13 @@ public class Folder {
 
   public Folder getParent() {
     return this.parent;
+  }
+
+  public ArrayList<ThreadPost> getThreads() {
+    return threads;
+  }
+
+  public void setThreads(ArrayList<ThreadPost> threads) {
+    this.threads = threads;
   }
 }

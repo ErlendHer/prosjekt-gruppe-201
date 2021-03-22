@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import app.core.ConnectionHandler;
 import app.core.folder.Folder;
+import app.core.folder.ThreadPost;
 
 public class FolderController extends ConnectionHandler {
 
@@ -23,7 +24,8 @@ public class FolderController extends ConnectionHandler {
 
       getCoursesStatement = conn.prepareStatement("SELECT CourseCode from Course");
 
-      getThreadsStatement = conn.prepareStatement("SELECT title FROM Thread NATURAL JOIN Folder WHERE folderId=(?)");
+      getThreadsStatement = conn
+          .prepareStatement("SELECT title, threadId FROM Thread NATURAL JOIN Folder WHERE folderId=(?)");
 
     } catch (Exception e) {
       System.out.println("Error occured during prepared SELECT statement");
@@ -46,7 +48,8 @@ public class FolderController extends ConnectionHandler {
       ArrayList<Folder> folders = new ArrayList<>();
 
       while (result.next()) {
-        folders.add(new Folder(result.getString("folderName"), result.getInt("folderID"), result.getInt("parentID")));
+        folders.add(new Folder(result.getString("folderName"), result.getInt("folderID"), result.getInt("parentID"),
+            executeGetThreads(result.getInt("folderId"))));
       }
 
       return folders;
@@ -85,18 +88,18 @@ public class FolderController extends ConnectionHandler {
    * @param folderId folderID
    * @return List of thread ids
    */
-  public ArrayList<String> executeGetThreads(int folderId) {
+  public ArrayList<ThreadPost> executeGetThreads(int folderId) {
     try {
       getThreadsStatement.setInt(1, folderId);
       var result = getThreadsStatement.executeQuery();
 
-      ArrayList<String> titles = new ArrayList<>();
+      ArrayList<ThreadPost> threads = new ArrayList<>();
 
       while (result.next()) {
-        titles.add(result.getString("title"));
+        threads.add(new ThreadPost(result.getString("title"), result.getInt("threadId")));
       }
 
-      return titles;
+      return threads;
 
     } catch (SQLException e) {
       e.printStackTrace();

@@ -7,24 +7,6 @@ import app.core.queries.FolderController;
 public class TreeBuilder {
 
   /**
-   * Add all children of the parent folder to the parent folder. Furthermore,
-   * remove all added folders from the "folders" ArrayList to avoid uneccesarry
-   * iterations.
-   *
-   * @param folders list of unvisited folders
-   * @param parent  parent folder
-   */
-  private static void addChildren(ArrayList<Folder> folders, Folder parent) {
-
-    for (int i = folders.size() - 1; i >= 0; i--) {
-      if (parent.getFolderID() == folders.get(i).getParentID()) {
-        parent.addChild(folders.get(i));
-        folders.remove(i);
-      }
-    }
-  }
-
-  /**
    * Use the principles of DFS to generate a folder tree structure based on an
    * arraylist of folders. NOTE -> This will generate an arbitrary "root" folder
    * which does not actually exist, but contains all the children that has its own
@@ -37,7 +19,7 @@ public class TreeBuilder {
 
     ArrayList<Folder> queue = new ArrayList<>();
 
-    Folder root = new Folder("root", -1, -1);
+    Folder root = new Folder("root", 0, -1, null);
 
     queue.add(root);
 
@@ -45,14 +27,23 @@ public class TreeBuilder {
     for (int i = 0; i < folders.size(); i++) {
       if (folders.get(i).getParentID() == 0) {
         root.addChild(folders.get(i));
+        folders.get(i).setParent(root);
+        folders.remove(i);
       }
     }
 
     while (!queue.isEmpty()) {
       var parent = queue.remove(queue.size() - 1);
-      addChildren(folders, parent);
-      for (var folder : parent.getChildren()) {
-        queue.add(folder);
+
+      for (int i = folders.size() - 1; i >= 0; i--) {
+
+        if (parent.getFolderID() == folders.get(i).getParentID()) {
+          // Folder folderCopy = new Folder(folders.get(i));
+          folders.get(i).setParent(parent);
+          parent.addChild(folders.get(i));
+          queue.add(folders.get(i));
+          folders.remove(i);
+        }
       }
     }
 
