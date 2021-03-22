@@ -1,5 +1,6 @@
 package app.core.queries;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,7 +9,7 @@ import java.util.StringTokenizer;
 
 import app.core.ConnectionHandler;
 
-public class UserSearchController extends ConnectionHandler {
+public class UserSearchController {
 
   private PreparedStatement searchStatement;
   private PreparedStatement getPostStatement;
@@ -18,6 +19,8 @@ public class UserSearchController extends ConnectionHandler {
    */
   public void setupQuery() {
     try {
+      Connection conn = ConnectionHandler.getConnection();
+
       searchStatement = conn.prepareStatement("SELECT P.postID " + "FROM POST as P NATURAL JOIN Thread AS T "
           + "INNER JOIN FOLDER as F ON T.FolderID = F.FolderID" + " WHERE P.content LIKE (?) OR T.Title LIKE (?)");
 

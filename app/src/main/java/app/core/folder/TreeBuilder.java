@@ -58,7 +58,6 @@ public class TreeBuilder {
    */
   public static ArrayList<Course> genTree() {
     var controller = new FolderController();
-    controller.connect();
     controller.setupQuery();
 
     var courseCodes = controller.executeGetCourses();

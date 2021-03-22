@@ -129,7 +129,6 @@ public class Console {
     boolean running = true;
 
     while (running) {
-      System.out.println("Current state: " + state);
       if (state == State.COURSE_VIEW) {
         System.out.println("Courses: ");
         for (var course : courses) {

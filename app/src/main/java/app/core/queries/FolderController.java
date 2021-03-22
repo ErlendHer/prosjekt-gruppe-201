@@ -1,5 +1,6 @@
 package app.core.queries;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import app.core.ConnectionHandler;
 import app.core.folder.Folder;
 import app.core.folder.ThreadPost;
 
-public class FolderController extends ConnectionHandler {
+public class FolderController {
 
   private PreparedStatement getFoldersStatement;
   private PreparedStatement getCoursesStatement;
@@ -19,6 +20,7 @@ public class FolderController extends ConnectionHandler {
    */
   public void setupQuery() {
     try {
+      Connection conn = ConnectionHandler.getConnection();
       getFoldersStatement = conn.prepareStatement(
           "SELECT folderName, folderID, parentID FROM Folder NATURAL JOIN Course WHERE Course.courseCode=(?)");
 

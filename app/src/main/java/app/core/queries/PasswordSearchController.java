@@ -3,13 +3,13 @@ package app.core.queries;
 import app.core.ConnectionHandler;
 import java.util.Scanner;
 import java.sql.*;
-import java.util.*;
-import java.lang.Object;
 
-public class PasswordSearchController extends ConnectionHandler {
+public class PasswordSearchController {
 
   public String executePasswordQuery(String userEmail) throws SQLException {
-    var searchStatement = this.conn.prepareStatement("select password from User where email = (?)");
+    Connection conn = ConnectionHandler.getConnection();
+
+    var searchStatement = conn.prepareStatement("select password from User where email = (?)");
     searchStatement.setString(1, userEmail);
     ResultSet result = searchStatement.executeQuery();
     if (result.next()) {
