@@ -3,6 +3,7 @@ package app;
 import java.sql.SQLException;
 
 import app.core.ConnectionHandler;
+import app.core.Console;
 import app.core.queries.PasswordSearchController;
 import app.core.queries.UserSearchController;
 
@@ -12,15 +13,18 @@ public class Main {
 		// ConnectionHandler conn = new ConnectionHandler();
 		// conn.connect();
 
-		UserSearchController controller = new UserSearchController();
-		controller.connect();
-		controller.setupQuery();
-		try {
-			controller.executeSearchQueryStringFormatted("wal");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Console console = new Console();
+		console.run();
+
+		// UserSearchController controller = new UserSearchController();
+		// controller.connect();
+		// controller.setupQuery();
+		// try {
+		// controller.executeSearchQueryStringFormatted("wal");
+		// } catch (SQLException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 		// try {
 		// PasswordSearchController pController = new PasswordSearchController();
