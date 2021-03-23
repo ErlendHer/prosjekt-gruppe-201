@@ -1,12 +1,11 @@
-package app.core.dao;
+package app.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import app.core.ConnectionHandler;
-import app.models.User;
+import app.core.models.User;
 
 public class UserDao {
 	

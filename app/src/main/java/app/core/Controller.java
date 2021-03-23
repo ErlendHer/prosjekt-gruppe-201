@@ -7,6 +7,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import app.dao.ConnectionHandler;
+
 public class Controller {
 	private Connection conn;
 	

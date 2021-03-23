@@ -1,18 +1,17 @@
-package app.state.handlers;
+package app.core.controllers;
 
 import java.sql.SQLException;
 
 import app.Store;
-import app.Store.StoreObject;
-import app.core.dao.UserDao;
-import app.models.User;
-import app.state.State;
+import app.core.models.User;
+import app.core.state.State;
+import app.dao.UserDao;
 
-public class LoginStateHandler extends AbstractStateHandler {
+public class LoginController extends AbstractController {
 	
 	private UserDao userDao;
 
-	public LoginStateHandler() {
+	public LoginController() {
 		super();
 		this.userDao = new UserDao();
 	}
@@ -28,9 +27,10 @@ public class LoginStateHandler extends AbstractStateHandler {
 		try {
 			User user = userDao.loginUser(inputs.get(0), inputs.get(1));
 			if(user != null) {
-				Store.setStoreValue(StoreObject.CurrentUser, user);
-				this.setNextState(State.POST);
-				System.out.println(String.format("Du er nå logget inn som: %s", user.getEmail()));
+				Store.setCurrentUser(user);
+				this.setNextState(State.BROWSE);
+				System.out.println(String.format("Du er nï¿½ logget inn som: %s", user.getEmail()));
+				scanner.close();
 				return true;
 			}
 		} catch (SQLException e) {

@@ -1,7 +1,9 @@
 package app.core.queries;
 
-import app.core.ConnectionHandler;
 import java.util.Scanner;
+
+import app.dao.ConnectionHandler;
+
 import java.sql.*;
 
 public class PasswordSearchController {

@@ -3,6 +3,11 @@ package app;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import app.core.models.Course;
+import app.core.models.Folder;
+import app.core.models.Thread;
+import app.core.models.User;
+
 public class Store {
 	
 	public static Map<String, Object> storeValues;
@@ -13,32 +18,40 @@ public class Store {
 		    put("currentUser", null);
 		    put("currentCourse", null);
 		    put("currentFolder", null);
-		    put("currentPost", null);
+		    put("currentThread", null);
 		}};
 	}
 	
-	public static Object getStoreValue(StoreObject obj) {
-		return storeValues.get(obj.getKey());
+	public static User getCurrentUser() {
+		return (User) storeValues.get("currentUser");
 	}
 	
-	public static void setStoreValue(StoreObject obj, Object value) {
-		storeValues.put(obj.getKey(), value);
+	public static void setCurrentUser(User user) {
+		storeValues.put("currentUser", user);
 	}
-
-	public enum StoreObject{
-		CurrentUser("currentUser"),
-		CurrentCourse("currentCourse"),
-		CurrentFolder("currentFolder"),
-		postID("currentPost");
-		
-		private String key;
-		
-		private StoreObject(String key) {
-			this.key = key;
-		}
-		
-		public String getKey() {
-			return this.key;
-		}
+	
+	public static Course getCurrentCourse() {
+		return (Course) storeValues.get("currentCourse");
 	}
+	
+	public static void setCurrentCourse(Course course) {
+		storeValues.put("currentCourse", course);
+	}
+	
+	public static Folder getCurrentFolder() {
+		return (Folder) storeValues.get("currentFolder");
+	}
+	
+	public static void setCurrentFolder(Folder folder) {
+		storeValues.put("currentFolder", folder);
+	}
+	
+	public static Thread getCurrentThread() {
+		return (Thread) storeValues.get("currentThread");
+	}
+	
+	public static void setCurrentThread(Thread thread) {
+		storeValues.put("currentThread", thread);
+	}
+	
 }

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import app.core.ConnectionHandler;
+import app.dao.ConnectionHandler;
 
 public class UserSearchController {
 
