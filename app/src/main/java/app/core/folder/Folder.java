@@ -20,15 +20,6 @@ public class Folder {
     children = new ArrayList<>();
   }
 
-  public Folder(Folder folder) {
-    this.name = folder.getName();
-    this.parentID = folder.getParentID();
-    this.folderID = folder.getFolderID();
-    this.children = folder.getChildren();
-    this.threads = folder.getThreads();
-    this.parent = folder.getParent();
-  }
-
   public String getName() {
     return name;
   }

@@ -20,6 +20,11 @@ public class Console {
     courses = TreeBuilder.genTree();
   }
 
+  /**
+   * Print the expanded folder structure based on the currently active folder.
+   * 
+   * @return the whitespace of the deepest folder.
+   */
   private int printFolders() {
     ArrayList<String> rootFolders = new ArrayList<>();
 
@@ -49,6 +54,10 @@ public class Console {
 
   }
 
+  /**
+   * Print a view of all threads in a folder. Calls printFolders() first and
+   * builds on it based on the whitespace returned.
+   */
   private void printThreads() {
     int whiteSpace = printFolders();
     String threadStr = "[Threads]";
@@ -58,6 +67,13 @@ public class Console {
     }
   }
 
+  /**
+   * Change directory based on user input. If the user types the name of a folder,
+   * course or thread, navigate to it. If the user types ".." navigate back one
+   * step.
+   * 
+   * @param cmd array of user entered input split by spaces.
+   */
   private void change_dir(String[] cmd) {
     if (cmd.length < 2) {
       System.out.println("Missing argument, use cd to change dir, e.g (cd post1)");
@@ -115,15 +131,17 @@ public class Console {
 
       }
 
-      if (!exists)
-
-      {
+      if (!exists) {
         System.out.println("The path does not exist");
       }
     }
 
   }
 
+  /**
+   * Console main loop, listen for user commands and execute actions accordingly.
+   * Mainly used to navigate between folders and threads.
+   */
   public void run() {
     Scanner userInput = new Scanner(System.in);
     boolean running = true;
@@ -151,7 +169,7 @@ public class Console {
           change_dir(cmd);
           break;
         default:
-          System.out.println("Not a valid command");
+          System.out.println("Not a valid command, type 'cd name' to navigate to name, and 'cd ..' to go back one dir");
         }
       }
 

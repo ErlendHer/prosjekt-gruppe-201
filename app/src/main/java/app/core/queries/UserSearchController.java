@@ -146,6 +146,13 @@ public class UserSearchController {
     return postBuilder.toString();
   }
 
+  /**
+   * Execute search query and return a formatted view of the posts retrieved.
+   * 
+   * @param wordMatch word to match against
+   * @return list of string representation of posts.
+   * @throws SQLException if the post was deleted in between queries.
+   */
   public ArrayList<String> executeSearchQueryStringFormatted(String wordMatch) throws SQLException {
     ArrayList<Integer> ids = getPostIdsByWordMatch(wordMatch);
 

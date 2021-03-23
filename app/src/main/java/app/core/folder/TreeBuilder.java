@@ -32,13 +32,14 @@ public class TreeBuilder {
       }
     }
 
+    // Iterate while the queue is empty
     while (!queue.isEmpty()) {
       var parent = queue.remove(queue.size() - 1);
 
       for (int i = folders.size() - 1; i >= 0; i--) {
 
+        // Find the children of the current dir and add them to the queue.
         if (parent.getFolderID() == folders.get(i).getParentID()) {
-          // Folder folderCopy = new Folder(folders.get(i));
           folders.get(i).setParent(parent);
           parent.addChild(folders.get(i));
           queue.add(folders.get(i));
