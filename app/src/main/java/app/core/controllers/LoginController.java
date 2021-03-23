@@ -30,7 +30,6 @@ public class LoginController extends AbstractController {
 				Store.setCurrentUser(user);
 				this.setNextState(State.BROWSE);
 				System.out.println(String.format("Du er n� logget inn som: %s", user.getEmail()));
-				scanner.close();
 				return true;
 			}
 		} catch (SQLException e) {

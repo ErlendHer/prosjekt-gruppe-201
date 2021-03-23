@@ -8,7 +8,7 @@ import app.Store;
 import app.core.models.AbstractModel;
 import app.core.models.Course;
 import app.core.models.Folder;
-import app.core.models.Thread;
+import app.core.models.ThreadPost;
 import app.core.state.State;
 import app.core.utils.TreeBuilder;
 import app.core.views.ForumView;
@@ -107,10 +107,15 @@ public class BrowseController extends AbstractController {
 				}
 			} else if (view == BrowseView.FOLDER_VIEW) {
 				int index = Integer.parseInt(inputs.get(1));
+				System.out.println(index);
 				AbstractModel obj = null;
+				System.out.println(Store.getCurrentFolder().getSubfolders().size());
 				if(index <= Store.getCurrentFolder().getSubfolders().size()) {
 					obj = lookupIndex(Store.getCurrentFolder().getSubfolders());
+					System.out.println("lookup folder");
 				} else {
+					int offset = index - Store.getCurrentFolder().getSubfolders().size();
+					this.inputs.set(1, String.valueOf(offset));
 					obj = lookupIndex(Store.getCurrentFolder().getThreads());
 				}
 				
@@ -122,7 +127,7 @@ public class BrowseController extends AbstractController {
 						exists = true;
 						this.view = BrowseView.FOLDER_VIEW;
 					} else {
-						Thread thread = (Thread) obj;
+						ThreadPost thread = (ThreadPost) obj;
 						Store.setCurrentThread(thread);
 						this.path.add("=> " + thread.getTitle());
 						exists = true;

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import app.core.models.Course;
 import app.core.models.Folder;
-import app.core.models.Thread;
+import app.core.models.ThreadPost;
 import app.core.models.User;
 
 public class Store {
@@ -46,11 +46,11 @@ public class Store {
 		storeValues.put("currentFolder", folder);
 	}
 	
-	public static Thread getCurrentThread() {
-		return (Thread) storeValues.get("currentThread");
+	public static ThreadPost getCurrentThread() {
+		return (ThreadPost) storeValues.get("currentThread");
 	}
 	
-	public static void setCurrentThread(Thread thread) {
+	public static void setCurrentThread(ThreadPost thread) {
 		storeValues.put("currentThread", thread);
 	}
 	

@@ -3,18 +3,22 @@ package app.core.models;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class Post.
  */
 public class Post extends AbstractModel {
 
-	
+	private User user;
 	private Integer threadID, userID, parentID;
+	private int likes;
 	private String content;
 	private boolean isAnswer;
 	private Timestamp datePosted, lastUpdated;
-	
+	private Post studentAnswer, instructorAnswer = null;
+	private ArrayList<Post> followUps = new ArrayList<Post>();
 	
 	/**
 	 * Instantiates a new post.
@@ -26,8 +30,9 @@ public class Post extends AbstractModel {
 	 * @param isAnswer whether the post is an answer or not
 	 * @param datePosted the date posted
 	 * @param lastUpdated the last updated
+	 * @param user the post owner
 	 */
-	public Post(Integer threadID, Integer userID, Integer parentID, String content, boolean isAnswer, Timestamp datePosted, Timestamp lastUpdated) {
+	public Post(Integer threadID, Integer userID, Integer parentID, String content, boolean isAnswer, Timestamp datePosted, Timestamp lastUpdated, User user) {
 		super();
 		this.threadID = threadID;
 		this.userID = userID;
@@ -36,6 +41,8 @@ public class Post extends AbstractModel {
 		this.isAnswer = isAnswer;
 		this.datePosted = datePosted;
 		this.lastUpdated = lastUpdated;
+		this.likes = 0;
+		this.user = user;
 	}
 	
 	/**
@@ -53,7 +60,150 @@ public class Post extends AbstractModel {
 		this.isAnswer = rs.getBoolean("isAnswer");
 		this.datePosted = rs.getTimestamp("datePosted");
 		this.lastUpdated = rs.getTimestamp("lastUpdated");
+		this.likes = rs.getInt("likes");
+		this.user = new User(rs);
 	}
+	
+	/**
+	 * Returns the post likes.
+	 * 
+	 * @return the amount of likes
+	 */
+	public int getLikes() {
+		return this.likes;
+	}
+	
+	/**
+	 * Sets the post's likes.
+	 * 
+	 * @param likes the likes to set
+	 */
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+	
+	/**
+	 * Add a like to the post.
+	 * 
+	 */
+	public void addLike() {
+		this.likes++;
+	}
+	
+	/**
+	 * Check if post has a students answer.
+	 * 
+	 * @return true, if has students answer
+	 */
+	public boolean hasStudentAnswer() {
+		if(this.studentAnswer != null) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets the students answer.
+	 * 
+	 * @return the students answer
+	 */
+	public Post getStudentAnswer() {
+		return this.studentAnswer;
+	}
+	
+	/**
+	 * Sets the students answer.
+	 * 
+	 * @param post the students answer
+	 */
+	public void setStudentAnswer(Post post) {
+		this.studentAnswer = post;
+	}
+	
+	/**
+	 * Check if post has a instructors answer.
+	 * 
+	 * @return true, if has instructors answer
+	 */
+	public boolean hasInstructorsAnswer() {
+		if(this.instructorAnswer != null) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets the instructors answer.
+	 * 
+	 * @return the instructors answer
+	 */
+	public Post getInstructorAnswer() {
+		return this.instructorAnswer;
+	}
+	
+	/**
+	 * Sets the instructors answer.
+	 * 
+	 * @param post the instructors answer
+	 */
+	public void setInstructorAnswer(Post post) {
+		this.instructorAnswer = post;
+	}
+	
+	/**
+	 * Check if post has comments/follow ups
+	 * 
+	 * @return true, if has post has comments/follow ups
+	 */
+	public boolean hasFollowUps() {
+		return !this.followUps.isEmpty();
+	}
+	
+	/**
+	 * Adds a follow up post to the thread.
+	 * 
+	 * @param post the follow up post to add
+	 */
+	public void addFollowUp(Post post) {
+		this.followUps.add(post);
+	}
+	
+	/**
+	 * Removes a follow up post from the thread.
+	 * 
+	 * @param post the follow up post to remove
+	 */
+	public void removeFollowUp(Post post) {
+		this.followUps.remove(post);
+	}
+	
+	/**
+	 * Returns all follow up discussions.
+	 * 
+	 * @return follow up discussions
+	 */
+	public ArrayList<Post> getFollowUps(){
+		return this.followUps;
+	}
+	
+	/**
+	 * Gets the post owner.
+	 * 
+	 * @return the post owner
+	 */
+	public User getUser() {
+		return this.user;
+	}
+	
+	/**
+	 * Sets the post owner.
+	 * 
+	 * @param user the post owner
+	 */
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
 
 	/**
 	 * Gets the thread Id.
@@ -179,6 +329,32 @@ public class Post extends AbstractModel {
 	 */
 	public void setAnswer(boolean isAnswer) {
 		this.isAnswer = isAnswer;
+	}
+	
+	/**
+	 * Returns an array of color codes based on the post's properties.
+	 * 
+	 * <ul>
+	 * <li>[RED]: unanswered</li>
+	 * <li>[YELLOW]: instructor has answered</li>
+	 * <li>[GREEN]: student has answered</li>
+	 * </ul>
+	 * 
+	 * @return colorCodes
+	 */
+	public ArrayList<String> getColorCodes() {
+		ArrayList<String> colorCodes = new ArrayList<String>();
+		if(this.hasInstructorsAnswer()) {
+			colorCodes.add("YELLOW");
+		}
+		if(this.hasStudentAnswer()) {
+			colorCodes.add("GREEN");
+		}
+		if(colorCodes.size() < 1 && !this.hasFollowUps()) {
+			colorCodes.add("RED");
+		}
+		
+		return colorCodes;
 	}
 
 	/**

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import app.core.models.Course;
 import app.core.models.Folder;
-import app.core.models.Thread;
+import app.core.models.ThreadPost;
 import app.dao.ForumDao;
 
 public class TreeBuilder {
@@ -63,7 +63,7 @@ public class TreeBuilder {
 		for (var course : courses) {
 			ArrayList<Folder> folders = forumDao.getCourseFolders(course.getId());
 			for (var folder : folders) {
-				ArrayList<Thread> threads = forumDao.getFolderThreads(folder.getId());
+				ArrayList<ThreadPost> threads = forumDao.getFolderThreads(folder.getId());
 				folder.setThreads(threads);
 			}
 

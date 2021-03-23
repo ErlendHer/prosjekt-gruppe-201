@@ -9,7 +9,7 @@ import app.core.state.State;
 
 public abstract class AbstractController {
 
-	private final List<String> cmdFlags = List.of("enter", "back", "quit", "search", "help");
+	private final List<String> cmdFlags = List.of("enter", "back", "quit", "search", "help", "answer", "comment", "like");
 	protected Scanner scanner;
 	protected ArrayList<String> inputs;
 	protected State nextState;
