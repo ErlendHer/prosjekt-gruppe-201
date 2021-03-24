@@ -9,3 +9,5 @@ app/target
 .project
 .settings/
 /app/bin/
+
+/.vscode/

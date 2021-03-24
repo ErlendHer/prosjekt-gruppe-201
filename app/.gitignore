@@ -7,3 +7,5 @@ app/target/*
 .settings
 .classpath
 .project
+
+/.vscode/
