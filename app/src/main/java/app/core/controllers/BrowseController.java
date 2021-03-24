@@ -1,30 +1,40 @@
 package app.core.controllers;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import app.Store;
 import app.core.models.AbstractModel;
 import app.core.models.Course;
 import app.core.models.Folder;
-import app.core.models.Thread;
+import app.core.models.Post;
+import app.core.models.ThreadPost;
 import app.core.state.State;
 import app.core.utils.TreeBuilder;
 import app.core.views.ForumView;
+import app.dao.PostDao;
+import app.dao.UserDao;
 
 public class BrowseController extends AbstractController {
 
+	private final UserDao userDao;
+	private final PostDao postDao;
+	private final ArrayList<String> path;
+
 	private BrowseView view;
 	private ArrayList<Course> courses;
-	private ArrayList<String> path;
 
 	public BrowseController() {
 		super();
+		this.userDao = new UserDao();
+		this.postDao = new PostDao();
 		view = BrowseView.COURSE_VIEW;
 		path = new ArrayList<String>();
 		try {
-			courses = TreeBuilder.genTree();
+			this.courses = TreeBuilder.genTree();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -52,23 +62,67 @@ public class BrowseController extends AbstractController {
 			this.awaitConsoleInput();
 			if (List.of("enter", "back").contains(inputs.get(0))) {
 				change_dir();
-			} else if (inputs.get(0).equalsIgnoreCase("søk")) {
-				if (inputs.size() > 1) {
-
-				} else {
-					System.out.println("Du må skrive inn et nøkkelord å søke etter, f.eks 'søk eksamen'");
+			} else if (Store.getCurrentUser().isInstructor() && inputs.get(0).equalsIgnoreCase("stat")) {
+				try {
+					userDao.getUserStatistics();
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
+			} else if (inputs.get(0).equalsIgnoreCase("logout")) {
+				Store.setCurrentUser(null);
+				this.setNextState(State.LOGIN);
+				return true;
+			} else if (view == BrowseView.FOLDER_VIEW && inputs.get(0).equalsIgnoreCase("create")) {
+				createNewThread();
 			}
-
 			this.clearInput();
 			if (Store.getCurrentThread() != null) {
 				return true;
 			}
-
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
+
 		return false;
+	}
+
+	protected AbstractModel lookupIndex(ArrayList<? extends AbstractModel> list) {
+		try {
+			int index = Integer.parseInt(inputs.get(1)) - 1;
+
+			return list.get(index);
+		} catch (NumberFormatException e) {
+			System.err.println("Ugyldig input, du må taste inn et heltall");
+		} catch (IndexOutOfBoundsException e2) {
+			System.err.println("Ugyldig valg");
+		}
+		return null;
+	}
+
+	private void createNewThread() {
+		this.clearInput();
+		// Insert title
+		System.out.println("Skriv inn tittel for tråden:");
+		this.readLine(false);
+		// Insert content
+		System.out.println("Tast inn spørsmålet ditt:");
+		this.readLine(false);
+		// Insert tags
+		System.out.println("Skriv inn tagger for tråden (separert med ',')");
+		this.readLine(false);
+
+		ThreadPost thread = new ThreadPost(Store.getCurrentFolder().getId(), this.inputs.get(0));
+		Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
+		thread.setOriginalPost(new Post(null, Store.getCurrentUser().getId(), null, this.inputs.get(1), false,
+				currentTimestamp, null, Store.getCurrentUser()));
+		String[] tags = inputs.get(2).trim().split(",");
+		try {
+			postDao.insertThread(thread, tags);
+			thread.getThreadPosts().put(thread.getOriginalPost().getId(), thread.getOriginalPost());
+			Store.getCurrentFolder().getThreads().add(thread);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void change_dir() {
@@ -110,9 +164,11 @@ public class BrowseController extends AbstractController {
 				if (index <= Store.getCurrentFolder().getSubfolders().size()) {
 					obj = lookupIndex(Store.getCurrentFolder().getSubfolders());
 				} else {
+					int offset = index - Store.getCurrentFolder().getSubfolders().size();
+					this.inputs.set(1, String.valueOf(offset));
 					obj = lookupIndex(Store.getCurrentFolder().getThreads());
-				}
 
+				}
 				if (obj != null) {
 					if (obj instanceof Folder) {
 						Folder folder = (Folder) obj;
@@ -121,9 +177,8 @@ public class BrowseController extends AbstractController {
 						exists = true;
 						this.view = BrowseView.FOLDER_VIEW;
 					} else {
-						Thread thread = (Thread) obj;
+						ThreadPost thread = (ThreadPost) obj;
 						Store.setCurrentThread(thread);
-						this.path.add("=> " + thread.getTitle());
 						exists = true;
 						this.setNextState(State.POST);
 					}

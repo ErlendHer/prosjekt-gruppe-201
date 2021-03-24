@@ -8,12 +8,11 @@ public class StateManager {
 	private AbstractController currentHandler;
 
 	public StateManager() {
-		this.setState(State.BROWSE);
+		this.setState(State.LOGIN);
 	}
 	
 	public void handleState() {
 		if(currentHandler.readInput()) {
-			currentHandler.closeScanner();
 			this.setState(currentHandler.getNextState());
 		};
 	}

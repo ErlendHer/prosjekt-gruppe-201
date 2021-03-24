@@ -14,7 +14,7 @@ public class Folder extends AbstractModel {
 	private boolean allowAnonymous;
 
 	private ArrayList<Folder> subfolders;
-	private ArrayList<Thread> threads = new ArrayList<Thread>();
+	private ArrayList<ThreadPost> threads = new ArrayList<ThreadPost>();
 	private Folder parent;
 
 	/**
@@ -171,7 +171,7 @@ public class Folder extends AbstractModel {
 	 *
 	 * @return the threads
 	 */
-	public ArrayList<Thread> getThreads() {
+	public ArrayList<ThreadPost> getThreads() {
 		return this.threads;
 	}
 
@@ -180,7 +180,7 @@ public class Folder extends AbstractModel {
 	 *
 	 * @param threads the new threads
 	 */
-	public void setThreads(ArrayList<Thread> threads) {
+	public void setThreads(ArrayList<ThreadPost> threads) {
 		this.threads = threads;
 	}
 

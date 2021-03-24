@@ -10,7 +10,9 @@ import app.core.state.State;
 
 public abstract class AbstractController {
 
-	private final List<String> cmdFlags = List.of("enter", "back", "quit", "search", "help");
+	private final List<String> cmdFlags = List.of("enter", "back", "quit", "search", "help", "answer", "create",
+			"comment", "like", "stat", "logout");
+
 	protected Scanner scanner;
 	protected ArrayList<String> inputs;
 	protected State nextState;
@@ -24,6 +26,7 @@ public abstract class AbstractController {
 		if (isInteger) {
 			while (true) {
 				String input = scanner.nextLine();
+				System.out.println(input);
 				try {
 					Integer.parseInt(input);
 					inputs.add(input);
