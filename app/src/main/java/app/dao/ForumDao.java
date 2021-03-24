@@ -115,16 +115,21 @@ public class ForumDao {
 		Connection conn = ConnectionHandler.getConnection();
 		ArrayList<ThreadPost> posts = new ArrayList<>();
 
+		// Setup SQL-query that finds all threadIDs that match the (?) field (title or
+		// content)
 		var searchStatement = conn
 				.prepareStatement("SELECT DISTINCT P.ThreadID " + "FROM POST as P NATURAL JOIN Thread AS T "
 						+ "INNER JOIN FOLDER as F ON T.FolderID = F.FolderID" + " WHERE P.content LIKE (?) OR T.Title LIKE (?)");
 
+		// Setup SQL-query to get all information we need on the thread based on the
+		// threadId in (?)
 		var getThreadStatement = conn
 				.prepareStatement("SELECT T.threadID, T.title, T.folderID, views FROM Thread AS T " + "NATURAL JOIN Folder "
 						+ "LEFT JOIN (SELECT * FROM Post " + "WHERE parentID IS NULL) AS P ON P.threadID = T.threadID "
 						+ "LEFT JOIN (SELECT userID AS U, count(*) AS views " + "FROM UserViews "
 						+ "GROUP BY userID) as UV ON UV.U = P.userID " + "WHERE T.ThreadId=(?)");
 
+		// Get ids of the threads that matched the word
 		var ids = getThreadIdsByWordMatch(searchStatement, keyword);
 
 		for (var id : ids) {
@@ -167,6 +172,7 @@ public class ForumDao {
 	 */
 	private ArrayList<Integer> getThreadIdsByWordMatch(PreparedStatement searchStatement, String keyword) {
 		try {
+			// Setup pattern REGEX to match the keyword
 			String pattern = "%" + keyword + "%";
 			searchStatement.setString(1, pattern);
 			searchStatement.setString(2, pattern);

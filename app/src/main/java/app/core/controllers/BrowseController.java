@@ -205,11 +205,15 @@ public class BrowseController extends AbstractController {
 		try {
 			String keyword = inputs.get(1);
 			var posts = forumDao.getPostsByKeyword(keyword);
+
+			// Only print posts if we found at least 1
 			if (posts.size() > 0) {
 				System.out.println("|******************************************THREADS MATCHING '" + keyword
 						+ "'******************************************|");
 				System.out
 						.println("\n### Found " + posts.size() + " matching thread" + (posts.size() == 1 ? "" : "s") + " ###\n");
+
+				// Iterate over the threads that matched the keyword and print them.
 				for (var thread : posts) {
 					ThreadView.printThread(thread);
 					System.out.println(

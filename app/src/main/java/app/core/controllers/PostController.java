@@ -1,7 +1,6 @@
 package app.core.controllers;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.sql.Timestamp;
@@ -9,10 +8,8 @@ import java.sql.Timestamp;
 import app.Store;
 import app.core.models.Post;
 import app.core.models.ThreadPost;
-import app.core.models.User;
 import app.core.state.State;
 import app.core.views.ThreadView;
-import app.dao.ForumDao;
 import app.dao.PostDao;
 
 public class PostController extends AbstractController {

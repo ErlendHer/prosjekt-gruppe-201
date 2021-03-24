@@ -28,9 +28,10 @@ public class TreeBuilder {
 	public static Folder genFolderTree(ArrayList<Folder> folders) {
 		ArrayList<Folder> queue = new ArrayList<>();
 
+		// Initialize root folder and add id to the queue.
 		Folder root = new Folder(null, null, "root", true);
-
 		queue.add(root);
+
 		// Add all root folders to the "master" root Folder object.
 		for (int i = 0; i < folders.size(); i++) {
 			if (folders.get(i).getParentId() == null) {
@@ -39,10 +40,17 @@ public class TreeBuilder {
 			}
 		}
 
+		// Iterate while the queue still has "undiscovered" folders
 		while (!queue.isEmpty()) {
 			var parent = queue.remove(queue.size() - 1);
+			// Iterate over all undiscovered folders
 			for (int i = folders.size() - 1; i >= 0; i--) {
+				// Check if the folder is a child of the parent folder
 				if (parent.getId() == folders.get(i).getParentId()) {
+
+					// Add the folder to the queue, set parent/children and remove it from the
+					// folders list
+					// (marking it as visited)
 					folders.get(i).setParent(parent);
 					parent.addSubfolder(folders.get(i));
 					queue.add(folders.get(i));
@@ -63,12 +71,13 @@ public class TreeBuilder {
 	 */
 	public static ArrayList<Course> genTree() throws SQLException {
 		ForumDao forumDao = new ForumDao();
-
 		ArrayList<Course> courses = forumDao.getCourses();
 
 		for (var course : courses) {
+			// Get the folders of the given course
 			ArrayList<Folder> folders = forumDao.getCourseFolders(course.getId());
 			for (var folder : folders) {
+				// Add the threads to the folder
 				ArrayList<ThreadPost> threads = forumDao.getFolderThreads(folder.getId());
 				folder.setThreads(threads);
 			}
