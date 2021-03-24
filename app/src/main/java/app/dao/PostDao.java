@@ -7,11 +7,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import app.core.models.Post;
-import app.core.models.User;
+import app.core.models.ThreadPost;
 
 public class PostDao {
 	
 	public boolean likePost(Integer postID, Integer userID) throws SQLException {
+		boolean result = false;
 		Connection conn = ConnectionHandler.getConnection();
 		PreparedStatement ps = conn.prepareStatement(
 				"INSERT INTO LikedBy(postID, userID) "
@@ -25,13 +26,14 @@ public class PostDao {
 		ps.setInt(4, userID);
 		int rowsAffected = ps.executeUpdate();
 		if(rowsAffected > 0) {
-			return true;
+			result = true;
 		}
-		return false;
+		conn.close();
+		return result;
 	}
 	
 	public boolean updatePostView(Integer userID, Integer threadID) throws SQLException {
-		System.out.println("Updating view");
+		boolean result = false;
 		Connection conn = ConnectionHandler.getConnection();
 		PreparedStatement ps = conn.prepareStatement(
 				"INSERT INTO UserViews(userID, threadID) "
@@ -45,9 +47,64 @@ public class PostDao {
 		ps.setInt(4, threadID);
 		int rowsAffected = ps.executeUpdate();
 		if(rowsAffected > 0) {
-			return true;
+			result = true;
 		}
-		return false;
+		conn.close();
+		return result;
+	}
+	
+	public void insertThread(ThreadPost thread, String[] tags) throws SQLException {
+		Connection conn = ConnectionHandler.getConnection();
+		PreparedStatement ps = conn.prepareStatement(
+				"INSERT INTO Thread(folderID, title) VALUES(?, ?)"
+				, Statement.RETURN_GENERATED_KEYS
+			);
+		ps.setInt(1, thread.getFolderId());
+		ps.setString(2, thread.getTitle());
+		ps.executeUpdate();
+		ResultSet rs = ps.getGeneratedKeys();
+		if(rs.next()) {
+			int threadID = rs.getInt(1);
+			thread.setId(threadID);
+			thread.getOriginalPost().setThreadId(threadID);
+			insertPost(thread.getOriginalPost());
+			insertTags(threadID, tags);
+		}
+		conn.close();
+	}
+	
+	private void insertTags(int threadID, String[] tags) throws SQLException {
+		Connection conn = ConnectionHandler.getConnection();
+		PreparedStatement ps = conn.prepareStatement("INSERT INTO ThreadTags() VALUES (?, ?)");
+		for(String tag: tags) {
+			ps.setInt(1, threadID);
+			ps.setInt(2, getTag(tag.trim()));
+			ps.addBatch();
+			ps.clearParameters();
+		}
+		ps.executeBatch();
+		conn.close();
+	}
+	
+	private Integer getTag(String tag) throws SQLException {
+		Integer result = null;
+		Connection conn = ConnectionHandler.getConnection();
+		PreparedStatement ps = conn.prepareStatement(
+				"INSERT INTO Tag(tagName) VALUES(?) " 
+				+ "ON DUPLICATE KEY UPDATE tagID=LAST_INSERT_ID(tagID), tagName=?"
+			);
+		ps.setString(1, tag);
+		ps.setString(2, tag);
+		PreparedStatement ps2 = conn.prepareStatement(
+				"SELECT LAST_INSERT_ID()"
+			);
+		ps.executeUpdate();
+		ResultSet rs = ps2.executeQuery();
+		if(rs.next()) {
+			result = rs.getInt(1);
+		}
+		conn.close();
+		return result;
 	}
 
 	public void insertPost(Post post) throws SQLException {
@@ -58,7 +115,7 @@ public class PostDao {
 			);
 		ps.setInt(1, post.getThreadId());
 		ps.setInt(2, post.getUserId());
-		ps.setInt(3, post.getParentId());
+		ps.setObject(3, post.getParentId());
 		ps.setString(4, post.getContent());
 		ps.setBoolean(5, post.isAnswer());
 		ps.setTimestamp(6, post.getDatePosted());
@@ -67,5 +124,6 @@ public class PostDao {
 		if(rs.next()) {
 			post.setId(rs.getInt(1));
 		}
+		conn.close();
 	}
 }

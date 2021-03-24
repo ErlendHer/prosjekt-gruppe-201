@@ -17,9 +17,9 @@ import app.dao.PostDao;
 
 public class PostController extends AbstractController {
 	
+	private final PostDao postDao;
+	
 	private ThreadPost thread;
-	private PostDao postDao;
-	private ForumDao forumDao;
 	private boolean hasUpdatedUserView;
 
 	public PostController() {
@@ -30,9 +30,7 @@ public class PostController extends AbstractController {
 	}
 	@Override
 	public boolean readInput() {
-		if(thread == null) {
-			this.thread = Store.getCurrentThread();
-		}
+		this.thread = Store.getCurrentThread();
 		if(!hasUpdatedUserView) {
 			try {
 				if(postDao.updatePostView(Store.getCurrentUser().getId(), thread.getId())) {
@@ -51,6 +49,10 @@ public class PostController extends AbstractController {
 			postComment();
 		} else if(inputs.get(0).equalsIgnoreCase("like")) {
 			likePost();
+		} else if(inputs.get(0).equalsIgnoreCase("logout")) {
+			Store.setCurrentUser(null);
+			this.setNextState(State.LOGIN);
+			return true;
 		} else if(inputs.get(0).equalsIgnoreCase("back")) {
 			Store.setCurrentThread(null);
 			this.hasUpdatedUserView = false;
@@ -76,7 +78,7 @@ public class PostController extends AbstractController {
 		boolean isAnswer = inputs.get(0).equalsIgnoreCase("answer") ? true : false;
 		Integer parentID = inputs.get(0).equalsIgnoreCase("comment") ? Integer.parseInt(inputs.get(1)) : thread.getOriginalPost().getId();
 		this.clearInput();
-		System.out.println("Skriv inn din kommentar");
+		System.out.println("Skriv inn din kommentar:");
 		this.readLine(false);
 		Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
 		Post comment = new Post(thread.getId(), Store.getCurrentUser().getId(), parentID, this.inputs.get(0), isAnswer, currentTimestamp, null, Store.getCurrentUser());

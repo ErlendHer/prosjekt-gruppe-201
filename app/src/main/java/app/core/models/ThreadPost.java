@@ -21,13 +21,11 @@ public class ThreadPost extends AbstractModel {
 	 *
 	 * @param folderID the folder ID
 	 * @param title the title
-	 * @param threadPost the original post
 	 */
-	public ThreadPost(Integer folderID, String title, Post threadPost) {
+	public ThreadPost(Integer folderID, String title) {
 		super();
 		this.folderID = folderID;
 		this.title = title;
-		this.originalPost = originalPost;
 		this.threadPosts = new LinkedHashMap<Integer, Post>();
 	}
 

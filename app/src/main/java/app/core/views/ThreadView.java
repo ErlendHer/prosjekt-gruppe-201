@@ -12,7 +12,7 @@ public class ThreadView {
 	
 	public static void printThread(ThreadPost thread) {
 		Post threadPost = thread.getOriginalPost();
-		printSeparator(true, 100);
+		UtilsView.printSeparator(true, 100);
 		System.out.println(String.format("[Visninger]: %d", thread.getViews()));
 		System.out.println(String.format("[COLOR CODES]: %s", thread.getOriginalPost().getColorCodes()));
 		printPost(0, thread.getTitle(), "[Good question]", threadPost);
@@ -67,20 +67,12 @@ public class ThreadView {
 			System.out.println(String.format("%1$" + (likes.length() + (4*indent)) + "s", likes));
 		}
 		System.out.println(String.format("%1$" + (post.getDatePosted().toString().length() + 2 + (4*indent)) + "s", "[" + post.getDatePosted() + "]"));
-		printSeparator(false, 100);
+		UtilsView.printSeparator(false, 100);
 	}
 	
 	private static void printAnswer(Post post, boolean isInstructor) {
 		String caption = isInstructor ? "[Instructors answer]" : "[Students answer]";
 		printPost(1, caption, "[Good answer]", post);
 	}
-	
-	private static void printSeparator(boolean large, int len) {
-		char sep = large ? '=' : '-';
-		StringBuilder sb = new StringBuilder();
-		for(int i = 0; i < len; i++) {
-			sb.append(sep);
-		}
-		System.out.println(sb.toString());
-	}
+
 }

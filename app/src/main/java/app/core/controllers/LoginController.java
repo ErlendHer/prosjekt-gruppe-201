@@ -9,7 +9,7 @@ import app.dao.UserDao;
 
 public class LoginController extends AbstractController {
 	
-	private UserDao userDao;
+	private final UserDao userDao;
 
 	public LoginController() {
 		super();
@@ -18,6 +18,7 @@ public class LoginController extends AbstractController {
 
 	@Override
 	public boolean readInput() {
+		this.clearInput();
 		System.out.println("Fyll inn brukernavn:");
 		readLine(false);
 		
