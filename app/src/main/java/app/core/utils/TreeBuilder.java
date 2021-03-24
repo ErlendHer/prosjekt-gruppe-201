@@ -8,6 +8,12 @@ import app.core.models.Folder;
 import app.core.models.ThreadPost;
 import app.dao.ForumDao;
 
+/**
+ * This Class uses the priniples of Depth-first-search to generate a
+ * folder-tree, where every folder has a list of children and a parent
+ * attribute. Using DFS, we build the tree and return the "root" folder which
+ * again has its subfolders and so on.
+ */
 public class TreeBuilder {
 
 	/**
@@ -32,7 +38,7 @@ public class TreeBuilder {
 				folders.get(i).setParent(root);
 			}
 		}
-		
+
 		while (!queue.isEmpty()) {
 			var parent = queue.remove(queue.size() - 1);
 			for (int i = folders.size() - 1; i >= 0; i--) {
@@ -44,7 +50,7 @@ public class TreeBuilder {
 				}
 			}
 		}
-		
+
 		return root;
 	}
 
