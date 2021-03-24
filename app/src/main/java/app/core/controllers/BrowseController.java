@@ -15,6 +15,8 @@ import app.core.models.ThreadPost;
 import app.core.state.State;
 import app.core.utils.TreeBuilder;
 import app.core.views.ForumView;
+import app.core.views.ThreadView;
+import app.dao.ForumDao;
 import app.dao.PostDao;
 import app.dao.UserDao;
 
@@ -22,6 +24,7 @@ public class BrowseController extends AbstractController {
 
 	private final UserDao userDao;
 	private final PostDao postDao;
+	private final ForumDao forumDao;
 	private final ArrayList<String> path;
 
 	private BrowseView view;
@@ -31,6 +34,7 @@ public class BrowseController extends AbstractController {
 		super();
 		this.userDao = new UserDao();
 		this.postDao = new PostDao();
+		this.forumDao = new ForumDao();
 		view = BrowseView.COURSE_VIEW;
 		path = new ArrayList<String>();
 		try {
@@ -74,13 +78,15 @@ public class BrowseController extends AbstractController {
 				return true;
 			} else if (view == BrowseView.FOLDER_VIEW && inputs.get(0).equalsIgnoreCase("create")) {
 				createNewThread();
+			} else if (view == BrowseView.COURSE_VIEW && inputs.get(0).equalsIgnoreCase("search")) {
+				printMatchedThreads();
 			}
 			this.clearInput();
 			if (Store.getCurrentThread() != null) {
 				return true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 
 		return false;
@@ -127,7 +133,7 @@ public class BrowseController extends AbstractController {
 
 	private void change_dir() {
 		if (!inputs.get(0).equalsIgnoreCase("back") && inputs.size() < 2) {
-			System.out.println("Missing argument, use cd to change dir, e.g (cd post1)");
+			System.out.println("Missing argument, use enter to change dir, e.g (enter post1)");
 			return;
 		}
 
@@ -188,6 +194,37 @@ public class BrowseController extends AbstractController {
 			if (!exists) {
 				System.out.println("The path does not exist");
 			}
+		}
+	}
+
+	/**
+	 * Find all threads where either the title or the posts match the given keyword
+	 * (inputs.get(1)) and print the result to the console.
+	 */
+	private void printMatchedThreads() {
+		try {
+			String keyword = inputs.get(1);
+			var posts = forumDao.getPostsByKeyword(keyword);
+			if (posts.size() > 0) {
+				System.out.println("|******************************************THREADS MATCHING '" + keyword
+						+ "'******************************************|");
+				System.out
+						.println("\n### Found " + posts.size() + " matching thread" + (posts.size() == 1 ? "" : "s") + " ###\n");
+				for (var thread : posts) {
+					ThreadView.printThread(thread);
+					System.out.println(
+							"====================================================================================================");
+				}
+				System.out.println(
+						"|************************************************MATCH END************************************************|");
+			} else {
+				System.out.println("The search query did not match any posts.");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IndexOutOfBoundsException e1) {
+			System.out.println("Missing keyword, to search type 'search keyword' (where keyword can be any word)");
 		}
 	}
 

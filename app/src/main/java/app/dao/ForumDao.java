@@ -103,27 +103,69 @@ public class ForumDao {
 		return postMap;
 	}
 
-	public ArrayList<Post> getPostsByKeyword(String keyword) throws SQLException {
+	/**
+	 * Get a list of ThreadPost where either the title or the posts content matches
+	 * the keyword.
+	 * 
+	 * @param keyword keyword to match
+	 * @return list of ThreadPost objects that matched.
+	 * @throws SQLException on mySQL-related issues.
+	 */
+	public ArrayList<ThreadPost> getPostsByKeyword(String keyword) throws SQLException {
 		Connection conn = ConnectionHandler.getConnection();
-		ArrayList<Post> posts = new ArrayList<Post>();
+		ArrayList<ThreadPost> posts = new ArrayList<>();
 
-		var searchStatement = conn.prepareStatement("SELECT P.postID " + "FROM POST as P NATURAL JOIN Thread AS T "
-				+ "INNER JOIN FOLDER as F ON T.FolderID = F.FolderID" + " WHERE P.content LIKE (?) OR T.Title LIKE (?)");
+		var searchStatement = conn
+				.prepareStatement("SELECT DISTINCT P.ThreadID " + "FROM POST as P NATURAL JOIN Thread AS T "
+						+ "INNER JOIN FOLDER as F ON T.FolderID = F.FolderID" + " WHERE P.content LIKE (?) OR T.Title LIKE (?)");
 
-		var getPostStatement = conn.prepareStatement(
-				"SELECT content, isAnswer, datePosted, firstName, lastName, isStudent FROM Post NATURAL JOIN THREAD NATURAL JOIN USER WHERE Post.postID = (?)");
+		var getThreadStatement = conn
+				.prepareStatement("SELECT T.threadID, T.title, T.folderID, views FROM Thread AS T " + "NATURAL JOIN Folder "
+						+ "LEFT JOIN (SELECT * FROM Post " + "WHERE parentID IS NULL) AS P ON P.threadID = T.threadID "
+						+ "LEFT JOIN (SELECT userID AS U, count(*) AS views " + "FROM UserViews "
+						+ "GROUP BY userID) as UV ON UV.U = P.userID " + "WHERE T.ThreadId=(?)");
 
-		var ids = getPostIdsByWordMatch(searchStatement, keyword);
+		var ids = getThreadIdsByWordMatch(searchStatement, keyword);
+
+		for (var id : ids) {
+			var thread = getThreadByID(getThreadStatement, id);
+			thread.setThreadPosts(buildThread(thread));
+			posts.add(thread);
+		}
+
+		conn.close();
 		return posts;
 	}
 
 	/**
-	 * Get the ids of the posts that match the given word
+	 * Get a ThreadPost object from the given ID
+	 * 
+	 * @param getThreadStatement prepared statement to the post from ID.
+	 * @param id                 threadId
+	 * @return ThreadPost if it exists, null otherwise
+	 */
+	private ThreadPost getThreadByID(PreparedStatement getThreadStatement, int id) {
+		try {
+			getThreadStatement.setInt(1, id);
+			var resultSet = getThreadStatement.executeQuery();
+
+			if (resultSet.next()) {
+				return new ThreadPost(resultSet);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	/**
+	 * Get the ids of the threads that match the given word
 	 * 
 	 * @param keyword word to match
 	 * @return list of matched post ids
 	 */
-	private ArrayList<Integer> getPostIdsByWordMatch(PreparedStatement searchStatement, String keyword) {
+	private ArrayList<Integer> getThreadIdsByWordMatch(PreparedStatement searchStatement, String keyword) {
 		try {
 			String pattern = "%" + keyword + "%";
 			searchStatement.setString(1, pattern);
@@ -133,29 +175,13 @@ public class ForumDao {
 			ArrayList<Integer> postIds = new ArrayList<>();
 
 			while (result.next()) {
-				postIds.add(result.getInt("PostID"));
+				postIds.add(result.getInt("threadID"));
 			}
 
 			return postIds;
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
-	 * Get a post ResultSet on the given ID
-	 * 
-	 * @param id id to get the post on.
-	 * @return ResultSet of the given post, null if it doesn't exist
-	 */
-	private ResultSet getPostById(PreparedStatement getPostStatement, int id) {
-		try {
-			getPostStatement.setInt(1, id);
-			return getPostStatement.executeQuery();
-		} catch (Exception e) {
-			System.out.println("Error fetching post by id " + id);
 		}
 		return null;
 	}
