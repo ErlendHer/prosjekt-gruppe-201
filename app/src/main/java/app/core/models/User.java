@@ -11,14 +11,14 @@ public class User extends AbstractModel {
 	private String email, firstName, lastName;
 
 	private boolean isStudent, isInstructor;
-	
+
 	/**
 	 * Instantiates a new user.
 	 *
-	 * @param email the email
-	 * @param firstName the first name
-	 * @param lastName the last name
-	 * @param isStudent whether user is student or not
+	 * @param email        the email
+	 * @param firstName    the first name
+	 * @param lastName     the last name
+	 * @param isStudent    whether user is student or not
 	 * @param isInstructor whether user is instructor or not
 	 */
 	public User(String email, String firstName, String lastName, boolean isStudent, boolean isInstructor) {
@@ -29,7 +29,7 @@ public class User extends AbstractModel {
 		this.isStudent = isStudent;
 		this.isInstructor = isInstructor;
 	}
-	
+
 	/**
 	 * Instantiates a new user.
 	 *
@@ -142,8 +142,8 @@ public class User extends AbstractModel {
 	 */
 	@Override
 	public String toString() {
-		return "User [userID=" + this.getId() + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName + ", isStudent="
-				+ isStudent + ", isInstructor=" + isInstructor + "]";
+		return "User [userID=" + this.getId() + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", isStudent=" + isStudent + ", isInstructor=" + isInstructor + "]";
 	}
-	
+
 }

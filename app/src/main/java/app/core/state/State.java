@@ -6,16 +6,14 @@ import app.core.controllers.LoginController;
 import app.core.controllers.PostController;
 
 public enum State {
-	LOGIN(new LoginController()),
-	BROWSE(new BrowseController()),
-	POST(new PostController());
-	
+	LOGIN(new LoginController()), BROWSE(new BrowseController()), POST(new PostController());
+
 	private AbstractController stateHandler;
 
 	private State(AbstractController stateHandler) {
 		this.stateHandler = stateHandler;
 	}
-	
+
 	public AbstractController getHandler() {
 		return this.stateHandler;
 	}

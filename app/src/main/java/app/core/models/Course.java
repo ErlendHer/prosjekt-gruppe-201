@@ -7,17 +7,17 @@ import java.sql.SQLException;
  * The Class Course.
  */
 public class Course extends AbstractModel {
-	
+
 	private String courseCode, courseName;
 	private int term;
 	private Folder root = null;
-	
+
 	/**
 	 * Instantiates a new course.
 	 *
 	 * @param courseCode the course code
 	 * @param courseName the course name
-	 * @param term the term
+	 * @param term       the term
 	 */
 	public Course(String courseCode, String courseName, int term) {
 		super();
@@ -38,7 +38,7 @@ public class Course extends AbstractModel {
 		this.courseName = rs.getString("courseName");
 		this.term = rs.getInt("term");
 	}
-	
+
 	/**
 	 * Sets the root folder.
 	 *
@@ -47,7 +47,7 @@ public class Course extends AbstractModel {
 	public void setRoot(Folder folder) {
 		this.root = folder;
 	}
-	
+
 	/**
 	 * Gets the root folder.
 	 *
@@ -118,7 +118,8 @@ public class Course extends AbstractModel {
 	 */
 	@Override
 	public String toString() {
-		return "Course [courseID=" + this.getId() + ", courseCode=" + courseCode + ", courseName=" + courseName + ", term=" + term + "]";
+		return "Course [courseID=" + this.getId() + ", courseCode=" + courseCode + ", courseName=" + courseName + ", term="
+				+ term + "]";
 	}
 
 }

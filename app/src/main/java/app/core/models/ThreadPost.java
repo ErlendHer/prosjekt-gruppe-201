@@ -20,7 +20,7 @@ public class ThreadPost extends AbstractModel {
 	 * Instantiates a new thread.
 	 *
 	 * @param folderID the folder ID
-	 * @param title the title
+	 * @param title    the title
 	 */
 	public ThreadPost(Integer folderID, String title) {
 		super();
@@ -59,7 +59,7 @@ public class ThreadPost extends AbstractModel {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
+
 	/**
 	 * Returns the post's views.
 	 * 
@@ -68,7 +68,7 @@ public class ThreadPost extends AbstractModel {
 	public int getViews() {
 		return this.views;
 	}
-	
+
 	/**
 	 * Sets the post's views.
 	 * 
@@ -77,7 +77,7 @@ public class ThreadPost extends AbstractModel {
 	public void setViews(int views) {
 		this.views = views;
 	}
-	
+
 	/**
 	 * Add a view to the post.
 	 * 
@@ -103,7 +103,7 @@ public class ThreadPost extends AbstractModel {
 	public void setFolderId(Integer folderID) {
 		this.folderID = folderID;
 	}
-	
+
 	/**
 	 * Gets the original post.
 	 * 
@@ -112,7 +112,7 @@ public class ThreadPost extends AbstractModel {
 	public Post getOriginalPost() {
 		return this.originalPost;
 	}
-	
+
 	/**
 	 * Sets the original post.
 	 * 
@@ -121,7 +121,7 @@ public class ThreadPost extends AbstractModel {
 	public void setOriginalPost(Post originalPost) {
 		this.originalPost = originalPost;
 	}
-	
+
 	/**
 	 * Gets the thread posts.
 	 * 
@@ -130,7 +130,7 @@ public class ThreadPost extends AbstractModel {
 	public Map<Integer, Post> getThreadPosts() {
 		return this.threadPosts;
 	}
-	
+
 	/**
 	 * Sets the thread posts.
 	 * 
@@ -150,7 +150,5 @@ public class ThreadPost extends AbstractModel {
 	public String toString() {
 		return "Thread [threadID=" + this.getId() + ", folderID=" + folderID + ", title=" + title + "]";
 	}
-
-	
 
 }

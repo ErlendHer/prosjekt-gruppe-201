@@ -20,9 +20,9 @@ public class Folder extends AbstractModel {
 	/**
 	 * Instantiates a new folder.
 	 *
-	 * @param courseID the course ID
-	 * @param parentID the parent ID
-	 * @param folderName the folder name
+	 * @param courseID       the course ID
+	 * @param parentID       the parent ID
+	 * @param folderName     the folder name
 	 * @param allowAnonymous whether the folder allows for anonymous posts or not
 	 */
 	public Folder(Integer courseID, Integer parentID, String folderName, boolean allowAnonymous) {
@@ -48,7 +48,7 @@ public class Folder extends AbstractModel {
 		this.allowAnonymous = rs.getBoolean("allowAnonymous");
 		subfolders = new ArrayList<Folder>();
 	}
-	
+
 	/**
 	 * Gets the course id.
 	 *
@@ -102,7 +102,7 @@ public class Folder extends AbstractModel {
 	public void setFolderName(String folderName) {
 		this.folderName = folderName;
 	}
-	
+
 	/**
 	 * Checks if folder allows anonymous posts.
 	 *
@@ -191,9 +191,8 @@ public class Folder extends AbstractModel {
 	 */
 	@Override
 	public String toString() {
-		return "Folder [folderID=" + this.getId() + ", courseID=" + courseID + ", parentID=" + parentID
-				+ ", folderName=" + folderName + ", allowAnonymous=" + allowAnonymous + "]";
+		return "Folder [folderID=" + this.getId() + ", courseID=" + courseID + ", parentID=" + parentID + ", folderName="
+				+ folderName + ", allowAnonymous=" + allowAnonymous + "]";
 	}
-	
-	
+
 }
