@@ -23,53 +23,52 @@ public class BrowseController extends AbstractController {
 		super();
 		view = BrowseView.COURSE_VIEW;
 		path = new ArrayList<String>();
-	    try {
+		try {
 			courses = TreeBuilder.genTree();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	  }
+	}
 
 	private void renderView() {
-		if(!path.isEmpty()) {
+		if (!path.isEmpty()) {
 			System.out.println("[path]: " + String.join(" ", path));
 		}
-		switch(view) {
-			case FOLDER_VIEW:
-				ForumView.printFolders();
-				ForumView.printThreads();
-				break;
-			default: 
-				ForumView.renderCourses(courses);
-				break;
+		switch (view) {
+		case FOLDER_VIEW:
+			ForumView.printFolders();
+			ForumView.printThreads();
+			break;
+		default:
+			ForumView.renderCourses(courses);
+			break;
 		}
 	}
-	
+
 	@Override
 	public boolean readInput() {
-		renderView();
-		this.awaitConsoleInput();
-		if(List.of("enter", "back").contains(inputs.get(0))) {
-			change_dir();
-		}
-		this.clearInput();
-		if(Store.getCurrentThread() != null) {
-			return true;
+		try {
+			renderView();
+			this.awaitConsoleInput();
+			if (List.of("enter", "back").contains(inputs.get(0))) {
+				change_dir();
+			} else if (inputs.get(0).equalsIgnoreCase("søk")) {
+				if (inputs.size() > 1) {
+
+				} else {
+					System.out.println("Du må skrive inn et nøkkelord å søke etter, f.eks 'søk eksamen'");
+				}
+			}
+
+			this.clearInput();
+			if (Store.getCurrentThread() != null) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
 		return false;
-	}
-	
-	private AbstractModel lookupIndex(ArrayList<? extends AbstractModel> list) {
-		try {
-			int index = Integer.parseInt(inputs.get(1))-1;
-			
-			return list.get(index);
-		} catch(NumberFormatException e) {
-			System.err.println("Ugyldig input, du må taste inn et heltall");
-		} catch(IndexOutOfBoundsException e2) {
-			System.err.println("Ugyldig valg");
-		}
-		return null;
 	}
 
 	private void change_dir() {
@@ -77,7 +76,7 @@ public class BrowseController extends AbstractController {
 			System.out.println("Missing argument, use cd to change dir, e.g (cd post1)");
 			return;
 		}
-		
+
 		if (inputs.get(0).equalsIgnoreCase("back")) {
 			boolean wentBack = true;
 			if (view == BrowseView.COURSE_VIEW) {
@@ -91,7 +90,7 @@ public class BrowseController extends AbstractController {
 					Store.setCurrentFolder(Store.getCurrentFolder().getParent());
 				}
 			}
-			if(wentBack) {
+			if (wentBack) {
 				this.path.remove(this.path.size() - 1);
 			}
 		} else {
@@ -108,15 +107,15 @@ public class BrowseController extends AbstractController {
 			} else if (view == BrowseView.FOLDER_VIEW) {
 				int index = Integer.parseInt(inputs.get(1));
 				AbstractModel obj = null;
-				if(index <= Store.getCurrentFolder().getSubfolders().size()) {
+				if (index <= Store.getCurrentFolder().getSubfolders().size()) {
 					obj = lookupIndex(Store.getCurrentFolder().getSubfolders());
 				} else {
 					obj = lookupIndex(Store.getCurrentFolder().getThreads());
 				}
-				
-				if(obj != null) {
-					if(obj instanceof Folder) {
-						Folder folder = (Folder) obj;	
+
+				if (obj != null) {
+					if (obj instanceof Folder) {
+						Folder folder = (Folder) obj;
 						Store.setCurrentFolder(folder);
 						this.path.add("=> " + folder.getFolderName());
 						exists = true;

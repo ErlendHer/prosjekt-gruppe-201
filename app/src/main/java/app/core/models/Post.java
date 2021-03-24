@@ -9,25 +9,27 @@ import java.sql.Timestamp;
  */
 public class Post extends AbstractModel {
 
-	
+	private Post studentAnswer, instructorAnswer;
+	private User user;
 	private Integer threadID, userID, parentID;
 	private String content;
 	private boolean isAnswer;
 	private Timestamp datePosted, lastUpdated;
-	
-	
+
 	/**
 	 * Instantiates a new post.
 	 *
-	 * @param threadID the thread ID
-	 * @param userID the user ID
-	 * @param parentID the parent ID
-	 * @param content the content
-	 * @param isAnswer whether the post is an answer or not
-	 * @param datePosted the date posted
+	 * @param threadID    the thread ID
+	 * @param userID      the user ID
+	 * @param parentID    the parent ID
+	 * @param content     the content
+	 * @param isAnswer    whether the post is an answer or not
+	 * @param datePosted  the date posted
 	 * @param lastUpdated the last updated
+	 * @param user        the post owner
 	 */
-	public Post(Integer threadID, Integer userID, Integer parentID, String content, boolean isAnswer, Timestamp datePosted, Timestamp lastUpdated) {
+	public Post(Integer threadID, Integer userID, Integer parentID, String content, boolean isAnswer,
+			Timestamp datePosted, Timestamp lastUpdated, User user) {
 		super();
 		this.threadID = threadID;
 		this.userID = userID;
@@ -36,8 +38,11 @@ public class Post extends AbstractModel {
 		this.isAnswer = isAnswer;
 		this.datePosted = datePosted;
 		this.lastUpdated = lastUpdated;
+		this.user = user;
+		this.studentAnswer = null;
+		this.instructorAnswer = null;
 	}
-	
+
 	/**
 	 * Instantiates a new post.
 	 *
@@ -53,6 +58,63 @@ public class Post extends AbstractModel {
 		this.isAnswer = rs.getBoolean("isAnswer");
 		this.datePosted = rs.getTimestamp("datePosted");
 		this.lastUpdated = rs.getTimestamp("lastUpdated");
+		this.user = new User(rs);
+		this.studentAnswer = null;
+		this.instructorAnswer = null;
+	}
+
+	/**
+	 * Gets the students answer.
+	 * 
+	 * @return the students answer
+	 */
+	public Post getStudentAnswer() {
+		return this.studentAnswer;
+	}
+
+	/**
+	 * Sets the students answer.
+	 * 
+	 * @param post the students answer
+	 */
+	public void setStudentAnswer(Post post) {
+		this.studentAnswer = post;
+	}
+
+	/**
+	 * Gets the instructors answer.
+	 * 
+	 * @return the instructors answer
+	 */
+	public Post getInstructorAnswer() {
+		return getInstructorAnswer();
+	}
+
+	/**
+	 * Sets the instructors answer.
+	 * 
+	 * @param post the instructors answer
+	 */
+	public void setInstructorAnswer(Post post) {
+		this.studentAnswer = post;
+	}
+
+	/**
+	 * Gets the post owner.
+	 * 
+	 * @return the post owner
+	 */
+	public User getUser() {
+		return this.user;
+	}
+
+	/**
+	 * Sets the post owner.
+	 * 
+	 * @param user the post owner
+	 */
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	/**
@@ -108,7 +170,7 @@ public class Post extends AbstractModel {
 	public void setParentId(Integer parentID) {
 		this.parentID = parentID;
 	}
-	
+
 	/**
 	 * Gets the content.
 	 *
@@ -188,8 +250,9 @@ public class Post extends AbstractModel {
 	 */
 	@Override
 	public String toString() {
-		return "Post [postID=" + this.getId() + ", threadID=" + threadID + ", userID=" + userID + ", parentID=" + parentID + ", content=" + content
-				+ ", isAnswer=" + isAnswer + ", datePosted=" + datePosted + ", lastUpdated=" + lastUpdated + "]";
+		return "Post [postID=" + this.getId() + ", threadID=" + threadID + ", userID=" + userID + ", parentID=" + parentID
+				+ ", content=" + content + ", isAnswer=" + isAnswer + ", datePosted=" + datePosted + ", lastUpdated="
+				+ lastUpdated + "]";
 	}
-	
+
 }

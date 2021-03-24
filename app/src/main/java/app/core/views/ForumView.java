@@ -8,7 +8,7 @@ import app.core.models.Course;
 import app.core.models.Folder;
 import app.core.models.Thread;
 
-public class ForumView{
+public class ForumView {
 
 	public static void renderCourses(ArrayList<Course> courses) {
 		System.out.println("Courses: ");
@@ -18,7 +18,7 @@ public class ForumView{
 			index++;
 		}
 	}
-	
+
 	public static void printFolders() {
 		ArrayList<String> rootFolders = new ArrayList<>();
 
@@ -44,13 +44,15 @@ public class ForumView{
 	public static void printThreads() {
 		Folder currFolder = Store.getCurrentFolder();
 		ArrayList<Thread> folderThreads = currFolder.getThreads();
-		if(!folderThreads.isEmpty()) {
+		if (!folderThreads.isEmpty()) {
 			System.out.println(String.format("%1$10s", "[Threads]"));
 			int index = currFolder.getSubfolders().size() + 1;
 			for (var thread : Store.getCurrentFolder().getThreads()) {
-				System.out.println(String.format("%1$5s: %2$1s [%3$1s]", "(" + String.valueOf(index) + ")", thread.getTitle(), thread.getThreadPost().getDatePosted()));
+				System.out.println(String.format("%1$5s: %2$1s [%3$1s]", "(" + String.valueOf(index) + ")", thread.getTitle(),
+						thread.getThreadPost().getDatePosted()));
 				index++;
 			}
 		}
 	}
+
 }
