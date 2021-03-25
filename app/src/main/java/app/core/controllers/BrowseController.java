@@ -16,20 +16,30 @@ import app.core.state.State;
 import app.core.utils.TreeBuilder;
 import app.core.views.ForumView;
 import app.core.views.ThreadView;
+import app.core.views.UtilsView;
 import app.dao.ForumDao;
 import app.dao.PostDao;
 import app.dao.UserDao;
 
+/**
+ * The Class BrowseController handles browsing of the forum. The user can browse
+ * folders and threads within courses, or search for threads by keywords.
+ */
 public class BrowseController extends AbstractController {
 
 	private final UserDao userDao;
 	private final PostDao postDao;
 	private final ForumDao forumDao;
+
+	// Breadcrumbs for representing current path
 	private final ArrayList<String> path;
 
 	private BrowseView view;
 	private ArrayList<Course> courses;
 
+	/**
+	 * Instantiates a new browse controller.
+	 */
 	public BrowseController() {
 		super();
 		this.userDao = new UserDao();
@@ -44,6 +54,9 @@ public class BrowseController extends AbstractController {
 		}
 	}
 
+	/**
+	 * Render view based on current View state.
+	 */
 	private void renderView() {
 		if (!path.isEmpty()) {
 			System.out.println("[path]: " + String.join(" ", path));
@@ -59,63 +72,78 @@ public class BrowseController extends AbstractController {
 		}
 	}
 
+	/**
+	 * Browse the Courses, Folders and Threads fetched from the database based on
+	 * user input.
+	 *
+	 * @return true, if a Thread is entered
+	 */
 	@Override
 	public boolean readInput() {
 		try {
 			renderView();
+			this.printMessages();
+			// Wait for user commands
 			this.awaitConsoleInput();
 			if (List.of("enter", "back").contains(inputs.get(0))) {
+				// Change directory
 				change_dir();
 			} else if (Store.getCurrentUser().isInstructor() && inputs.get(0).equalsIgnoreCase("stat")) {
 				try {
+					// Fetch and print user statistics
 					userDao.getUserStatistics();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 			} else if (inputs.get(0).equalsIgnoreCase("logout")) {
-				Store.setCurrentUser(null);
+				// Logout current user, switch to Login-state
+				Store.resetStore();
+				this.path.clear();
 				this.setNextState(State.LOGIN);
+				view = BrowseView.COURSE_VIEW;
 				return true;
 			} else if (view == BrowseView.FOLDER_VIEW && inputs.get(0).equalsIgnoreCase("create")) {
-				createNewThread();
+				// Create a new Thread if the user is within a folder
+				if (Store.getCurrentFolder().getCourseId() != null) {
+					createNewThread();
+				} else {
+					this.addMessage("You must be within a folder in order to create a thread");
+				}
 			} else if (view == BrowseView.COURSE_VIEW && inputs.get(0).equalsIgnoreCase("search")) {
+				// Search and print Threads
 				printMatchedThreads();
+			} else if (inputs.get(0).equalsIgnoreCase("help")) {
+				// Print help commands
+				this.addMessage(UtilsView.getBrowseHelpString());
 			}
 			this.clearInput();
 			if (Store.getCurrentThread() != null) {
 				return true;
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			this.addMessage(e.getMessage());
 		}
 
 		return false;
 	}
 
-	protected AbstractModel lookupIndex(ArrayList<? extends AbstractModel> list) {
-		try {
-			int index = Integer.parseInt(inputs.get(1)) - 1;
-
-			return list.get(index);
-		} catch (NumberFormatException e) {
-			System.err.println("Ugyldig input, du må taste inn et heltall");
-		} catch (IndexOutOfBoundsException e2) {
-			System.err.println("Ugyldig valg");
-		}
-		return null;
-	}
-
+	/**
+	 * Creates new ThreadPost. Reads title, question and tags from user input and
+	 * attempts to insert a new ThreadPost to the database
+	 * 
+	 * @see ThreadPost
+	 */
 	private void createNewThread() {
 		this.clearInput();
 		// Insert title
-		System.out.println("Skriv inn tittel for tråden:");
-		this.readLine(false);
+		System.out.println("Enter the thread's title:");
+		this.readLine();
 		// Insert content
-		System.out.println("Tast inn spørsmålet ditt:");
-		this.readLine(false);
+		System.out.println("Enter your question:");
+		this.readLine();
 		// Insert tags
-		System.out.println("Skriv inn tagger for tråden (separert med ',')");
-		this.readLine(false);
+		System.out.println("Enter tags for this thread (separated with ',')");
+		this.readLine();
 
 		ThreadPost thread = new ThreadPost(Store.getCurrentFolder().getId(), this.inputs.get(0));
 		Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
@@ -131,26 +159,28 @@ public class BrowseController extends AbstractController {
 		}
 	}
 
+	/**
+	 * Handles directory change.
+	 */
 	private void change_dir() {
-		if (!inputs.get(0).equalsIgnoreCase("back") && inputs.size() < 2) {
-			System.out.println("Missing argument, use enter to change dir, e.g (enter post1)");
-			return;
-		}
-
 		if (inputs.get(0).equalsIgnoreCase("back")) {
 			boolean wentBack = true;
 			if (view == BrowseView.COURSE_VIEW) {
-				System.out.println("You are at root, you can't go back");
+				this.addMessage("You are at root, you can't go back");
 				wentBack = false;
 			} else if (view == BrowseView.FOLDER_VIEW) {
 				if (Store.getCurrentFolder().getParent() == null) {
+					// Exit current course
 					view = BrowseView.COURSE_VIEW;
 					Store.setCurrentFolder(Store.getCurrentCourse().getRoot());
+					Store.setCurrentCourse(null);
 				} else {
+					// Return to parent folder
 					Store.setCurrentFolder(Store.getCurrentFolder().getParent());
 				}
 			}
 			if (wentBack) {
+				// Pop last path if user went back one level
 				this.path.remove(this.path.size() - 1);
 			}
 		} else {
@@ -158,6 +188,7 @@ public class BrowseController extends AbstractController {
 			if (view == BrowseView.COURSE_VIEW) {
 				Course course = (Course) lookupIndex(courses);
 				if (course != null) {
+					// Enter specified course
 					Store.setCurrentCourse(course);
 					Store.setCurrentFolder(course.getRoot());
 					exists = true;
@@ -167,9 +198,12 @@ public class BrowseController extends AbstractController {
 			} else if (view == BrowseView.FOLDER_VIEW) {
 				int index = Integer.parseInt(inputs.get(1));
 				AbstractModel obj = null;
+
 				if (index <= Store.getCurrentFolder().getSubfolders().size()) {
+					// Look for Folder at current index
 					obj = lookupIndex(Store.getCurrentFolder().getSubfolders());
 				} else {
+					// Look for Thread at current index
 					int offset = index - Store.getCurrentFolder().getSubfolders().size();
 					this.inputs.set(1, String.valueOf(offset));
 					obj = lookupIndex(Store.getCurrentFolder().getThreads());
@@ -177,12 +211,14 @@ public class BrowseController extends AbstractController {
 				}
 				if (obj != null) {
 					if (obj instanceof Folder) {
+						// Lookup result was a Folder, enter specified folder
 						Folder folder = (Folder) obj;
 						Store.setCurrentFolder(folder);
 						this.path.add("=> " + folder.getFolderName());
 						exists = true;
 						this.view = BrowseView.FOLDER_VIEW;
 					} else {
+						// Lookup result was a Thread, proceed to Post-state
 						ThreadPost thread = (ThreadPost) obj;
 						Store.setCurrentThread(thread);
 						exists = true;
@@ -192,7 +228,7 @@ public class BrowseController extends AbstractController {
 			}
 
 			if (!exists) {
-				System.out.println("The path does not exist");
+				this.addMessage("The path does not exist");
 			}
 		}
 	}
@@ -232,6 +268,10 @@ public class BrowseController extends AbstractController {
 		}
 	}
 
+	/**
+	 * The Enum BrowseView. Used for deciding how to render the current level in the
+	 * forum.
+	 */
 	enum BrowseView {
 		COURSE_VIEW, FOLDER_VIEW,
 	}

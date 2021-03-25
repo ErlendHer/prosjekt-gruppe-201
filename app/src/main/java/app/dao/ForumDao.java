@@ -14,8 +14,18 @@ import app.core.models.Folder;
 import app.core.models.Post;
 import app.core.models.ThreadPost;
 
+/**
+ * The Class ForumDao, a Data Access Object for data used for representing the
+ * forum.
+ */
 public class ForumDao {
 
+	/**
+	 * Gets the Courses.
+	 *
+	 * @return the courses
+	 * @throws SQLException the SQL exception
+	 */
 	public ArrayList<Course> getCourses() throws SQLException {
 		ArrayList<Course> result = new ArrayList<Course>();
 		Connection conn = ConnectionHandler.getConnection();
@@ -28,6 +38,15 @@ public class ForumDao {
 		return result;
 	}
 
+	/**
+	 * Gets the Folders belonging to a given Course.
+	 * 
+	 * @see Course
+	 *
+	 * @param courseID the course ID
+	 * @return the course folders
+	 * @throws SQLException the SQL exception
+	 */
 	public ArrayList<Folder> getCourseFolders(Integer courseID) throws SQLException {
 		ArrayList<Folder> result = new ArrayList<Folder>();
 		Connection conn = ConnectionHandler.getConnection();
@@ -42,6 +61,15 @@ public class ForumDao {
 		return result;
 	}
 
+	/**
+	 * Gets the Threads belonging to a given Folder.
+	 * 
+	 * @see Folder
+	 *
+	 * @param folderID the folder ID
+	 * @return the folder threads
+	 * @throws SQLException the SQL exception
+	 */
 	public ArrayList<ThreadPost> getFolderThreads(Integer folderID) throws SQLException {
 		ArrayList<ThreadPost> result = new ArrayList<ThreadPost>();
 		Connection conn = ConnectionHandler.getConnection();
@@ -60,6 +88,17 @@ public class ForumDao {
 		return result;
 	}
 
+	/**
+	 * Builds a Thread by adding Posts in hierarchical order relative to the Threads
+	 * original post.
+	 * 
+	 * @see Thread
+	 * @see Post
+	 *
+	 * @param thread the thread
+	 * @return the map
+	 * @throws SQLException the SQL exception
+	 */
 	public Map<Integer, Post> buildThread(ThreadPost thread) throws SQLException {
 		Post threadPost = null;
 		Connection conn = ConnectionHandler.getConnection();
@@ -191,4 +230,5 @@ public class ForumDao {
 		}
 		return null;
 	}
+
 }

@@ -4,7 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * The Class User.
+ * The Class User represents a User-object fetched from the Database. A User can
+ * be registered as Student and/or Instructor.
  */
 public class User extends AbstractModel {
 

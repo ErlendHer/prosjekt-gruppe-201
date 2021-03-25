@@ -5,7 +5,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * The Class Folder.
+ * The Class Folder represents a Folder-object fetched from the Database. A
+ * Folder contains a list of Folder representing subfolders and list of Threads.
+ * 
+ * @see ThreadPost
  */
 public class Folder extends AbstractModel {
 

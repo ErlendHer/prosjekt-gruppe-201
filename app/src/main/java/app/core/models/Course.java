@@ -4,7 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * The Class Course.
+ * The Class Course represents a Course-object fetched from the Database.
+ * 
+ * @see Folder
  */
 public class Course extends AbstractModel {
 

@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * The Class Thread.
+ * The Class Thread represents a Thread-object fetched from the Database.
  */
 public class ThreadPost extends AbstractModel {
 
